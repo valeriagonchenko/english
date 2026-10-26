@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6efda">
+  <meta name="description" content="Word Cottage — уютный совместный сад английских слов.">
+  <title>Word Cottage · уютный английский</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Word Cottage — главная"><span class="brand-icon">🌼</span><span><strong>WORD COTTAGE</strong><small>наша маленькая история слов</small></span></a>
+      <div class="topbar-right"><span class="save-status" id="saveStatus">● Демо-режим</span><button class="icon-button" id="helpButton" title="Как играть" aria-label="Как играть">?</button></div>
+    </header>
+    <main>
+      <section class="intro">
+        <div><p class="eyebrow">✦ A LITTLE WORD EVERY DAY ✦</p><h1>Наш уютный <em>уголок</em></h1><p class="subtitle">Учим английский, выращиваем слова и строим что-то хорошее вместе.</p></div>
+        <div class="coin-counter"><span>🪙</span><div><small>Наши монетки</small><strong id="coinCount">0</strong></div></div>
+      </section>
+      <section class="world-card" aria-label="Общий игровой мир">
+        <div class="world-toolbar"><span class="world-tag">🌤️ Солнечная полянка</span><span class="world-tag code-tag" id="roomCodeDisplay">ЛОКАЛЬНЫЙ МИР</span></div>
+        <div class="world" id="world">
+          <canvas id="scene" width="480" height="260" aria-label="Пиксельный домик, сад и котик"></canvas>
+          <button class="world-hotspot house-hotspot" id="houseHotspot" aria-label="Открыть украшения домика" title="Наш домик"></button>
+          <button class="world-hotspot pet-hotspot" id="petHotspot" aria-label="Погладить питомца" title="Погладить питомца"></button>
+          <div class="bed-hotspots" id="bedHotspots"></div>
+          <span class="scene-note note-house">НАШ ДОМ</span><span class="scene-note note-garden">САД СЛОВ ↓</span>
+        </div>
+        <div class="world-bottom"><span>🌱 Каждое выученное слово делает сад красивее</span><span id="worldHint">Нажми на грядку или котика!</span></div>
+      </section>
+      <section class="players" id="playersSection" aria-label="Игроки и прогресс"></section>
+      <section class="actions" aria-label="Действия">
+        <button class="action action-primary" id="learnButton"><span class="action-emoji">📖</span><span><strong>Учить слова</strong><small>5 минут для себя</small></span><span class="action-arrow">↗</span></button>
+        <button class="action" id="gardenButton"><span class="action-emoji">🌱</span><span><strong>Мой сад</strong><small>Посмотреть рост</small></span></button>
+        <button class="action" id="petButton"><span class="action-emoji">🐈</span><span><strong>Питомец</strong><small>Уют и магазин</small></span></button>
+        <button class="action" id="giftButton"><span class="action-emoji">💌</span><span><strong>Подарок</strong><small>Слово для друга</small></span><span class="gift-dot" id="giftDot" hidden></span></button>
+      </section>
+      <footer><span>Создано с заботой ♡</span><button id="settingsButton">⚙ Настройки мира</button></footer>
+    </main>
+  </div>
+  <div class="overlay" id="onboarding" role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
+    <div class="welcome-card">
+      <div class="welcome-illustration">🏡 <span>🌷</span> 🐈</div><p class="eyebrow">WELCOME HOME!</p><h2 id="onboardTitle">Добро пожаловать в Word Cottage</h2><p class="welcome-desc">Домик на двоих, сад из английских слов и котик, который всегда рад вас видеть.</p>
+      <div class="mode-tabs" id="modeTabs"><button class="mode-tab active" data-mode="create">Создать мир</button><button class="mode-tab" data-mode="join">Войти по коду</button></div>
+      <div class="form-fields"><label for="playerName">Как тебя зовут?</label><input id="playerName" maxlength="18" placeholder="Твоё имя" autocomplete="nickname"><label>Твой английский</label><div class="level-choice"><button class="level-btn selected" data-level="A0"><strong>A0</strong><small>С самого начала</small></button><button class="level-btn" data-level="A2"><strong>A2–B1</strong><small>Уже немного знаю</small></button></div><div class="join-code" id="joinCodeRow" hidden><label for="joinCode">Код приглашения</label><input id="joinCode" maxlength="8" placeholder="Например, WCD8K2P" autocapitalize="characters"></div><button class="primary-btn" id="startButton">Создать уютный мир ✨</button></div>
+      <p class="mode-description" id="modeDescription">Деморежим: играть можно сразу, прогресс хранится на устройстве.</p>
+    </div>
+  </div>
+  <div class="overlay modal-overlay hidden" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-head"><div><p class="eyebrow" id="modalEyebrow"></p><h2 id="modalTitle"></h2></div><button class="close-btn" id="closeModal" aria-label="Закрыть">×</button></div><div id="modalBody"></div></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="firebase-config.js"></script><script src="data.js"></script><script src="app.js"></script>
+</body>
+</html>

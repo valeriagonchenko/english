@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isMember() {
+      return signedIn() && (resource.data.owner == request.auth.uid || resource.data.guest == request.auth.uid);
+    }
+    function sameMembers() {
+      return request.resource.data.owner == resource.data.owner &&
+             request.resource.data.guest == resource.data.guest;
+    }
+    function playerOnlyUpdatesSelf() {
+      return request.resource.data.players.diff(resource.data.players)
+          .affectedKeys().hasOnly([request.auth.uid]);
+    }
+    function validSharedEdit() {
+      return isMember() && sameMembers() &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['players', 'coins', 'plants', 'pet', 'decor', 'gifts', 'updatedAt']) &&
+        playerOnlyUpdatesSelf() &&
+        request.resource.data.coins is int &&
+        request.resource.data.coins >= 0 &&
+        request.resource.data.coins <= resource.data.coins + 10 &&
+        request.resource.data.coins >= resource.data.coins - 70 &&
+        request.resource.data.plants.size() == 6 &&
+        request.resource.data.decor.size() <= 6 &&
+        request.resource.data.gifts.size() <= 1000;
+    }
+    function guestJoins() {
+      return signedIn() &&
+        resource.data.guest == null &&
+        resource.data.owner != request.auth.uid &&
+        request.resource.data.guest == request.auth.uid &&
+        request.resource.data.owner == resource.data.owner &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['guest', 'players', 'updatedAt']) &&
+        !resource.data.players.keys().hasAny([request.auth.uid]) &&
+        request.resource.data.players.size() == 2 &&
+        request.resource.data.players.diff(resource.data.players)
+          .affectedKeys().hasOnly([request.auth.uid]);
+    }
+    match /rooms/{roomCode} {
+      // Code is used for a one-time guarded join update only; it does not grant read access.
+      allow get: if isMember();
+      allow list: if false;
+      allow create: if signedIn() &&
+        roomCode.matches('^[A-Z2-9]{7}$') &&
+        request.resource.data.code == roomCode &&
+        request.resource.data.owner == request.auth.uid &&
+        request.resource.data.guest == null &&
+        request.resource.data.coins == 0 &&
+        request.resource.data.players.keys().hasOnly([request.auth.uid]) &&
+        request.resource.data.plants.size() == 6;
+      allow update: if validSharedEdit() || guestJoins();
+      allow delete: if false;
+    }
+  }
+}
